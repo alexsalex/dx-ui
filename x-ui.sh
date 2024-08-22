@@ -217,15 +217,15 @@ stop() {
     check_status
     if [[ $? == 1 ]]; then
         echo ""
-        LOGI "面板已停止，无需再次停止"
+        LOGI "The panel has been stopped, no need to stop it again"
     else
         systemctl stop x-ui
         sleep 2
         check_status
         if [[ $? == 1 ]]; then
-            LOGI "dx-ui 与 xray 停止成功"
+            LOGI "dx-ui and xray stopped successfully"
         else
-            LOGE "面板停止失败，可能是因为停止时间超过了两秒，请稍后查看日志信息"
+            LOGE "The panel failed to stop, probably because the stop time exceeded two seconds. Please check the log information later."
         fi
     fi
 
@@ -239,9 +239,9 @@ restart() {
     sleep 2
     check_status
     if [[ $? == 0 ]]; then
-        LOGI "x-ui 与 xray 重启成功"
+        LOGI "dx-ui and xray restarted successfully"
     else
-        LOGE "面板重启失败，可能是因为启动时间超过了两秒，请稍后查看日志信息"
+        LOGE "Panel restart failed, probably because the startup time exceeded two seconds, please check the log information later"
     fi
     if [[ $# == 0 ]]; then
         before_show_menu
@@ -258,9 +258,9 @@ status() {
 enable() {
     systemctl enable x-ui
     if [[ $? == 0 ]]; then
-        LOGI "x-ui 设置开机自启成功"
+        LOGI "dx-ui is set to start automatically at boot time successfully"
     else
-        LOGE "x-ui 设置开机自启失败"
+        LOGE "dx-ui failed to set up automatic startup"
     fi
 
     if [[ $# == 0 ]]; then
@@ -271,9 +271,9 @@ enable() {
 disable() {
     systemctl disable x-ui
     if [[ $? == 0 ]]; then
-        LOGI "x-ui 取消开机自启成功"
+        LOGI "x-ui successfully canceled the automatic startup"
     else
-        LOGE "x-ui 取消开机自启失败"
+        LOGE "x-ui failed to cancel the automatic startup"
     fi
 
     if [[ $# == 0 ]]; then
@@ -305,11 +305,11 @@ update_shell() {
     wget -O /usr/bin/x-ui -N --no-check-certificate https://github.com/vaxilu/x-ui/raw/master/x-ui.sh
     if [[ $? != 0 ]]; then
         echo ""
-        LOGE "下载脚本失败，请检查本机能否连接 Github"
+        LOGE "Failed to download the script, please check whether the local machine can connect to Github"
         before_show_menu
     else
         chmod +x /usr/bin/x-ui
-        LOGI "升级脚本成功，请重新运行脚本" && exit 0
+        LOGI "Upgrade script successful, please re-run the script" && exit 0
     fi
 }
 
@@ -339,7 +339,7 @@ check_uninstall() {
     check_status
     if [[ $? != 2 ]]; then
         echo ""
-        LOGE "面板已安装，请不要重复安装"
+        LOGE "The panel has been installed, please do not install it again"
         if [[ $# == 0 ]]; then
             before_show_menu
         fi
@@ -353,7 +353,7 @@ check_install() {
     check_status
     if [[ $? == 2 ]]; then
         echo ""
-        LOGE "请先安装面板"
+        LOGE "Please install the panel first"
         if [[ $# == 0 ]]; then
             before_show_menu
         fi
@@ -367,15 +367,15 @@ show_status() {
     check_status
     case $? in
     0)
-        echo -e "面板状态: ${green}已运行${plain}"
+        echo -e "Panel status: ${green} is running ${plain}"
         show_enable_status
         ;;
     1)
-        echo -e "面板状态: ${yellow}未运行${plain}"
+        echo -e "Panel status: ${yellow} is not running ${plain}"
         show_enable_status
         ;;
     2)
-        echo -e "面板状态: ${red}未安装${plain}"
+        echo -e "Panel status: ${red} is not installed ${plain}"
         ;;
     esac
     show_xray_status
@@ -435,18 +435,18 @@ ssl_cert_issue() {
             rm -rf $certPath
             mkdir $certPath
         fi
-        LOGD "请设置域名:"
+        LOGD "Please set the domain name:"
         read -p "Input your domain here:" CF_Domain
-        LOGD "你的域名设置为:${CF_Domain}"
-        LOGD "请设置API密钥:"
+        LOGD "Your domain name is set to: ${CF_Domain}"
+        LOGD "Please set the API key:"
         read -p "Input your key here:" CF_GlobalKey
-        LOGD "你的API密钥为:${CF_GlobalKey}"
-        LOGD "请设置注册邮箱:"
+        LOGD "Your API key is: ${CF_GlobalKey}"
+        LOGD "Please set the registered email:"
         read -p "Input your email here:" CF_AccountEmail
-        LOGD "你的注册邮箱为:${CF_AccountEmail}"
+        LOGD "Your registered email is: ${CF_AccountEmail}"
         ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
         if [ $? -ne 0 ]; then
-            LOGE "修改默认CA为Lets'Encrypt失败,脚本退出"
+            LOGE "Failed to change the default CA to Lets'Encrypt, the script exited"
             exit 1
         fi
         export CF_Key="${CF_GlobalKey}"
@@ -484,20 +484,20 @@ ssl_cert_issue() {
 }
 
 show_usage() {
-    echo "x-ui 管理脚本使用方法: "
+    echo "x-ui management script usage: "
     echo "------------------------------------------"
-    echo "x-ui              - 显示管理菜单 (功能更多)"
-    echo "x-ui start        - 启动 x-ui 面板"
-    echo "x-ui stop         - 停止 x-ui 面板"
-    echo "x-ui restart      - 重启 x-ui 面板"
-    echo "x-ui status       - 查看 x-ui 状态"
-    echo "x-ui enable       - 设置 x-ui 开机自启"
-    echo "x-ui disable      - 取消 x-ui 开机自启"
-    echo "x-ui log          - 查看 x-ui 日志"
-    echo "x-ui v2-ui        - 迁移本机器的 v2-ui 账号数据至 x-ui"
-    echo "x-ui update       - 更新 x-ui 面板"
-    echo "x-ui install      - 安装 x-ui 面板"
-    echo "x-ui uninstall    - 卸载 x-ui 面板"
+    echo "x-ui            - Display management menu (more functions)"
+    echo "x-ui start      - Start x-ui panel"
+    echo "x-ui stop       - Stop x-ui panel"
+    echo "x-ui restart    - Restart x-ui panel"
+    echo "x-ui status     - View x-ui status"
+    echo "x-ui enable     - Set x-ui to start automatically at boot"
+    echo "x-ui disable    - Cancel x-ui to start automatically at boot"
+    echo "x-ui log        - View x-ui log"
+    echo "x-ui v2-ui      - Migrate the v2-ui account data of this machine to x-ui"
+    echo "x-ui update     - Update x-ui panel"
+    echo "x-ui install    - Install x-ui panel"
+    echo "x-ui uninstall  - Uninstall x-ui panel"
     echo "------------------------------------------"
 }
 
